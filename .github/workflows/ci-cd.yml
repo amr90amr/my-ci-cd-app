@@ -13,18 +13,42 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Show files
+      run: ls -R
+
     - name: Build Docker image
-      run: docker build -t myapp:${{ github.sha }} ./app
+      run: docker build -t myapp ./app
 
-    - name: Run container (test)
-      run: docker run -d -p 80:80 myapp:${{ github.sha }}
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Deploy to Kubernetes
+    - name: Deploy
       run: |
-        kubectl apply -f k8s/deployment.yaml
-        kubectl apply -f k8s/service.yaml
+        kubectl apply -f ./k8s/deployment.yaml
+        kubectl apply -f ./k8s/service.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
