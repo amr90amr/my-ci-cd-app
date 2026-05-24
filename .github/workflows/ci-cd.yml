@@ -1,40 +1,70 @@
-
-
-
-
-
-
-
-
-
-name: Multi Environment Pipeline
+name: Multi Env Pipeline
 
 on:
   push:
     branches:
       - dev
       - test
-      - main
+      - prod
 
 jobs:
 
   deploy-dev:
     if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
+      - run: echo "Deploy DEV"
 
-      - name: Deploy RBAC
-        run: |
-          kubectl apply -f k8s/dev/sa.yaml
-          kubectl apply -f k8s/dev/role.yaml
-          kubectl apply -f k8s/dev/rolebinding.yaml
+  deploy-test:
+    if: github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "Deploy TEST"
 
-      - name: Deploy App
-        run: |
-          kubectl apply -f k8s/dev/deployment.yaml
-          kubectl apply -f k8s/dev/service.yaml
+  deploy-prod:
+    if: github.ref == 'refs/heads/prod'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "Deploy PROD"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
