@@ -1,4 +1,4 @@
-name: Multi Env Pipeline
+name: CI-CD Pipeline
 
 on:
   push:
@@ -8,27 +8,70 @@ on:
       - prod
 
 jobs:
-
-  deploy-dev:
-    if: github.ref == 'refs/heads/dev'
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
-      - run: echo "Deploy DEV"
 
-  deploy-test:
-    if: github.ref == 'refs/heads/test'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: echo "Deploy TEST"
+      - name: Deploy DEV
+        if: github.ref == 'refs/heads/dev'
+        run: kubectl apply -f k8s/dev/
 
-  deploy-prod:
-    if: github.ref == 'refs/heads/prod'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: echo "Deploy PROD"
+      - name: Deploy TEST
+        if: github.ref == 'refs/heads/test'
+        run: kubectl apply -f k8s/test/
+
+      - name: Deploy PROD
+        if: github.ref == 'refs/heads/prod'
+        run: kubectl apply -f k8s/prod/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
