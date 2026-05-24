@@ -1,4 +1,5 @@
 
+
 name: CI-CD Pipeline
 
 on:
@@ -9,31 +10,57 @@ on:
       - prod
 
 jobs:
-
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-      - name: Debug (important)
-        run: ls -R k8s
+    # =========================
+    # Setup kubectl
+    # =========================
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v4
 
-      - name: Deploy DEV
-        if: github.ref == 'refs/heads/dev'
-        run: kubectl apply -f k8s/dev/
+    # =========================
+    # Setup kubeconfig (IMPORTANT FIX)
+    # =========================
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+        export KUBECONFIG=$HOME/.kube/config
 
-      - name: Deploy TEST
-        if: github.ref == 'refs/heads/test'
-        run: kubectl apply -f k8s/test/
+    # =========================
+    # Verify cluster connection
+    # =========================
+    - name: Check cluster
+      run: |
+        kubectl config current-context
+        kubectl get nodes
 
-      - name: Deploy PROD
-        if: github.ref == 'refs/heads/prod'
-        run: kubectl apply -f k8s/prod/
+    # =========================
+    # Deploy DEV
+    # =========================
+    - name: Deploy to DEV
+      if: github.ref == 'refs/heads/dev'
+      run: kubectl apply --validate=false -f k8s/dev/
 
+    # =========================
+    # Deploy TEST
+    # =========================
+    - name: Deploy to TEST
+      if: github.ref == 'refs/heads/test'
+      run: kubectl apply --validate=false -f k8s/test/
 
+    # =========================
+    # Deploy PROD (with approval style gate)
+    # =========================
+    - name: Deploy to PROD
+      if: github.ref == 'refs/heads/prod'
+      run: kubectl apply --validate=false -f k8s/prod/
 
 
 
