@@ -1,3 +1,5 @@
+
+
 name: CI-CD Pipeline
 
 on:
@@ -13,79 +15,54 @@ jobs:
 
     steps:
 
-    # =========================
-    # 1. Checkout code
-    # =========================
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    # =========================
-    # 2. Setup kubectl
-    # =========================
-    - name: Setup kubectl
+    - name: Install kubectl
       uses: azure/setup-kubectl@v4
 
     # =========================
-    # 3. Setup kubeconfig (FIX FOR YOUR ERROR)
+    # FIX: kubeconfig (IMPORTANT)
     # =========================
-    - name: Configure kubeconfig
+    - name: Setup kubeconfig
+      shell: bash
       run: |
         mkdir -p $HOME/.kube
-        echo "${KUBE_CONFIG}" | base64 -d > $HOME/.kube/config
+        echo "$KUBE_CONFIG" | base64 -d > $HOME/.kube/config
         export KUBECONFIG=$HOME/.kube/config
-        kubectl config current-context
+        kubectl config view
+        kubectl cluster-info
+
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 
     # =========================
-    # 4. Verify cluster connection
+    # VERIFY CONNECTION
     # =========================
-    - name: Cluster Info
+    - name: Verify cluster
       run: |
         kubectl get nodes
-        kubectl cluster-info
 
     # =========================
-    # 5. Deploy DEV
+    # DEPLOY DEV
     # =========================
     - name: Deploy DEV
       if: github.ref == 'refs/heads/dev'
       run: kubectl apply --validate=false -f k8s/dev/
 
     # =========================
-    # 6. Deploy TEST
+    # DEPLOY TEST
     # =========================
     - name: Deploy TEST
       if: github.ref == 'refs/heads/test'
       run: kubectl apply --validate=false -f k8s/test/
 
     # =========================
-    # 7. Deploy PROD
+    # DEPLOY PROD
     # =========================
     - name: Deploy PROD
       if: github.ref == 'refs/heads/prod'
       run: kubectl apply --validate=false -f k8s/prod/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
