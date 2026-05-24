@@ -10,19 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Show files
-      run: ls -R
+    - uses: actions/checkout@v3
 
     - name: Build Docker image
       run: docker build -t myapp ./app
 
-    - name: Deploy
-      run: |
-        kubectl apply -f ./k8s/deployment.yaml
-        kubectl apply -f ./k8s/service.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
