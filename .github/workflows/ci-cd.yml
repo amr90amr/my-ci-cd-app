@@ -8,15 +8,17 @@ on:
       - prod
 
 jobs:
+
   deploy:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Show files (DEBUG)
-        run: ls -R
+      - name: Debug (important)
+        run: ls -R k8s
 
       - name: Deploy DEV
         if: github.ref == 'refs/heads/dev'
