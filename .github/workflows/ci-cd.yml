@@ -7,43 +7,70 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-name: CI-CD Pipeline
+name: Multi Environment Pipeline
 
 on:
   push:
     branches:
+      - dev
+      - test
       - main
 
 jobs:
-  build:
+
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Show files
+      - name: Deploy RBAC
         run: |
-          pwd
-          find .
+          kubectl apply -f k8s/dev/sa.yaml
+          kubectl apply -f k8s/dev/role.yaml
+          kubectl apply -f k8s/dev/rolebinding.yaml
 
-      - name: Build Docker image
-        run: docker build -t myapp ./app
+      - name: Deploy App
+        run: |
+          kubectl apply -f k8s/dev/deployment.yaml
+          kubectl apply -f k8s/dev/service.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
